@@ -1,0 +1,3 @@
+from pydantic import BaseModel
+from langchain_google_genai import ChatGoogleGenerativeAI
+print(ChatGoogleGenerativeAI.model_fields)

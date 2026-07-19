@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Python
+venv/
+**/venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Contracts / build artifacts
+/contracts/managed
+/contracts/VeriSkill.compact
+/logs
+/midnight-level-db
+/.midnight-expert
+deployment.json
+
+# Environment files
+.env
+.env.preview
+.env.preprod
+
+# Maven build output
+**/target/
