@@ -26,7 +26,7 @@ import { filter, take, tap, timeout } from 'rxjs/operators';
 import { getConfig } from '../src/config.js';
 import { MidnightWalletProvider, syncWallet } from '../src/wallet.js';
 
-// Must match src/test/hw.test.ts.
+// Must match src/test/veriskill.test.ts.
 const ALICE_SEED = '0000000000000000000000000000000000000000000000000000000000000001';
 
 const logger = pino({

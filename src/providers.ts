@@ -6,21 +6,21 @@ import { levelPrivateStateProvider } from '@midnight-ntwrk/midnight-js-level-pri
 import { type MidnightWalletProvider } from './wallet.js';
 import { type NetworkConfig } from './config.js';
 
-export type HelloWorldCircuits = 'storeMessage';
+export type VeriSkillCircuits = 'check_qualification';
 
-export type HelloWorldProviders = MidnightProviders<any>;
+export type VeriSkillProviders = MidnightProviders<VeriSkillCircuits>;
 
 export function buildProviders(
     wallet: MidnightWalletProvider,
     zkConfigPath: string,
     config: NetworkConfig,
-): HelloWorldProviders {
-    const zkConfigProvider = new NodeZkConfigProvider<HelloWorldCircuits>(zkConfigPath);
+): VeriSkillProviders {
+    const zkConfigProvider = new NodeZkConfigProvider<VeriSkillCircuits>(zkConfigPath);
 
     return {
         privateStateProvider: levelPrivateStateProvider({
-            privateStateStoreName: `hello-world-${Date.now()}`,
-            privateStoragePasswordProvider: () => 'Hello-World-Test-Password',
+            privateStateStoreName: `veri-skill-${Date.now()}`,
+            privateStoragePasswordProvider: () => 'Veri-Skill-Test-Password',
             accountId: wallet.getCoinPublicKey(),
         }),
         publicDataProvider: indexerPublicDataProvider(

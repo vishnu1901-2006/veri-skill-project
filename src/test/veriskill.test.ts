@@ -19,9 +19,9 @@ import {
   syncWallet,
   type WalletSecret,
 } from '../wallet.js';
-import { buildProviders, type HelloWorldProviders } from '../providers.js';
+import { buildProviders, type VeriSkillProviders } from '../providers.js';
 import {
-  CompiledHelloWorldContract,
+  CompiledVeriSkillContract,
   Contract,
   ledger,
   zkConfigPath,
@@ -42,7 +42,7 @@ process.on('uncaughtException', (err) => {
 
 const ALICE_LOCAL_SEED =
   '0000000000000000000000000000000000000000000000000000000000000001';
-const PRIVATE_STATE_ID = 'AlicePrivateHWState';
+const PRIVATE_STATE_ID = 'AlicePrivateVeriSkillState';
 
 const logger = pino({
   level: process.env['LOG_LEVEL'] ?? 'info',
@@ -82,9 +82,9 @@ function resolveSecret(net: string): WalletSecret {
   );
 }
 
-describe(`Hello World Contract (${network})`, () => {
+describe(`Veri-Skill Contract (${network})`, () => {
   let wallet: MidnightWalletProvider;
-  let providers: HelloWorldProviders;
+  let providers: VeriSkillProviders;
   let contractAddress: ContractAddress;
 
   const config = getConfig();
@@ -95,7 +95,7 @@ describe(`Hello World Contract (${network})`, () => {
       (isRemote ? 60 * 60_000 : 10 * 60_000),
   );
 
-  async function queryLedger(p: HelloWorldProviders) {
+  async function queryLedger(p: VeriSkillProviders) {
     const state = await p.publicDataProvider.queryContractState(contractAddress);
     expect(state).not.toBeNull();
     return ledger(state!.data);
@@ -141,12 +141,12 @@ describe(`Hello World Contract (${network})`, () => {
     }
   });
 
-  it('Deploys the contract', async () => {
+  it('Deploys the Veri-Skill contract', async () => {
     logger.info(`Creating private state...`);
 
     const deployed: DeployedContract<Contract> =
       await (deployContract<Contract>)(providers, {
-        compiledContract: CompiledHelloWorldContract,
+        compiledContract: CompiledVeriSkillContract,
         privateStateId: PRIVATE_STATE_ID,
         initialPrivateState: {},
       });
@@ -155,24 +155,23 @@ describe(`Hello World Contract (${network})`, () => {
     contractAddress = deployed.deployTxData.public.contractAddress;
     logger.info(`Contract deployed at: ${contractAddress}`);
     expect(contractAddress).toBeDefined();
-    expect(contractAddress.length).toBeGreaterThan(0);
-
-    const state = await queryLedger(providers);
-    expect(state.message).toEqual('');
   });
 
-  it('Stores Hello World!', async () => {
-    const message = 'Hello World!';
+  it('Verifies candidate qualification', async () => {
+    const score = 85;
+    const threshold = 70;
 
-    await (submitCallTx<Contract, 'storeMessage'>)(providers, {
-      compiledContract: CompiledHelloWorldContract,
+    await (submitCallTx<Contract, 'check_qualification'>)(providers, {
+      compiledContract: CompiledVeriSkillContract,
       contractAddress,
       privateStateId: PRIVATE_STATE_ID,
-      circuitId: 'storeMessage',
-      args: [message],
+      circuitId: 'check_qualification',
+      args: [BigInt(score), BigInt(threshold)],
     });
 
     const state = await queryLedger(providers);
-    expect(state.message).toEqual(message);
+    expect(state.qualifiedCount).toEqual(1n);
+
+    logger.info('Qualification proof generated successfully!');
   });
 });
